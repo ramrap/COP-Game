@@ -162,7 +162,7 @@ int main()
         return 1;
     }
 
-    tex = load_texture(renderer, "resources/player.bmp");
+    tex = load_texture(renderer, "resources/player1.bmp");
     bullet = load_texture(renderer, "resources/bullet.bmp");
     power = load_texture(renderer, "resources/power2.png");
     int i;

@@ -263,7 +263,7 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
     SDL_Rect rect;
     rect.w = TILE_SIZE;
     rect.h = TILE_SIZE;
-    bitmap = SDL_LoadBMP("resources/tile.bmp");
+    bitmap = SDL_LoadBMP("resources/tile1.bmp");
     SDL_Texture *tex = NULL;
     tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
