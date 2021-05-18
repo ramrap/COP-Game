@@ -14,8 +14,8 @@
 #define PLAYER_SPEED 4
 #define PLAYER_WIDTH 25
 #define PLAYER_HEIGHT 25
-#define BULLET_HEIGHT 8
-#define BULLET_WIDTH 8
+#define BULLET_HEIGHT 32
+#define BULLET_WIDTH 32
 #define MAX_PLAYERS 3
 #define CLIENT_FRAME_TIME 15
 #define SERVER_FRAME_TIME 15
@@ -29,5 +29,6 @@
 #define UP_KEY 0x04
 #define DOWN_KEY 0x08
 #define ATTACK_KEY 0x10
+#define MAX_POWER 5
 
 #endif

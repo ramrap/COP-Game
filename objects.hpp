@@ -11,6 +11,7 @@ struct Player {
     int face, shoot, reloading;
     int left_key, right_key, up_key, down_key, attack_key;
     int kills, deaths;
+    int powerA,powerATime, powerB, powerBTime;
 };
 
 struct Bullet {

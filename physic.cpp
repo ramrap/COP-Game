@@ -10,6 +10,7 @@
 // #include "main.cpp"
 // #include "audio.hpp"
 
+
 int map[15][20] = {
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -172,27 +173,27 @@ int check_if_player_power(struct Player *player, set<pair<int, int>> &power_serv
     struct SDL_Rect p = player->position;
     SDL_Rect rect;
 
-    // for (auto i : power_server)
-    // {
-    //     int x = i.first, y = i.second;
-    //     map[x / TILE_SIZE][y / TILE_SIZE] = 2;
+    for (auto i : power_server)
+    {
+        int x = i.first, y = i.second;
+        map[x / TILE_SIZE][y / TILE_SIZE] = 2;
 
-    //     if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-    //         map[(p.y + p.h) / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-    //         map[(p.y) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2 ||
-    //         map[(p.y + p.h) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2
+        if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
+            map[(p.y + p.h) / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
+            map[(p.y) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2 ||
+            map[(p.y + p.h) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2
 
-    //     )
-    //     {
+        )
+        {
 
-    //         map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-    //         rect.x = TILE_SIZE * (p.y / TILE_SIZE);
-    //         rect.y = TILE_SIZE * (p.x / TILE_SIZE);
-    //         power_server.erase(i);
-    //         // SDL_RenderCopy(renderer, , NULL, &rect);
-    //         return true;
-    //     }
-    // }
+            map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
+            rect.x = TILE_SIZE * (p.y / TILE_SIZE);
+            rect.y = TILE_SIZE * (p.x / TILE_SIZE);
+            power_server.erase(i);
+            // SDL_RenderCopy(renderer, , NULL, &rect);
+            return true;
+        }
+    }
 
      if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 
         )

@@ -12,7 +12,7 @@ void Audio::load(const char* filename) {
 }
 
 void Audio::play() {
-    std::cout<<"will play music \n";
+    // std::cout<<"will play music \n";
     SDL_QueueAudio(deviceId, wavBuffer, wavLength);
     SDL_PauseAudioDevice(deviceId, 0);
 }

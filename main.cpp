@@ -26,6 +26,8 @@ int number_of_players = 0;
 int16_t my_id = -1;
 int16_t bullets_client[256];
 
+vector<pair<int,int>>power_array(MAX_POWER);
+
 int bullets_number = 0;
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, char *file)
@@ -63,6 +65,10 @@ void init_players()
         players[i].reloading = false;
         players[i].kills = 0;
         players[i].deaths = 0;
+        players[i].powerA = 0;
+        players[i].powerATime = 0;
+        players[i].powerB = 0;
+        players[i].powerBTime = 0;
     }
 }
 
@@ -98,11 +104,21 @@ void *client_loop(void *arg)
         }
         if (id >= 0)
         {
+            // cout<<"thread me he \n";
             check_if_its_new_player(id);
             players[id].position.x = tab[1];
             players[id].position.y = tab[2];
             players[id].kills = tab[3];
             players[id].deaths = tab[4];
+            players[id].powerA = tab[5];
+            
+            for(int i=7;i<7+MAX_POWER;i++){
+               
+                power_array[i-7].first=tab[i];
+                power_array[i-7].second=tab[i+MAX_POWER];
+            }
+
+
         }
         if (id == -2)
         {
@@ -163,7 +179,7 @@ int main()
     }
 
     tex = load_texture(renderer, "resources/player1.bmp");
-    bullet = load_texture(renderer, "resources/bullet.bmp");
+    bullet = load_texture(renderer, "resources/fire.bmp");
     power = load_texture(renderer, "resources/power2.png");
     int i;
     server_or_client(renderer, &menu, font);
@@ -244,6 +260,17 @@ int main()
             bullet_pos.y = bullets_client[i * 2 + 1];
             SDL_RenderCopy(renderer, bullet, NULL, &bullet_pos);
         }
+        cout<<"power_array \n";
+        //  for (i = 0; i <MAX_POWER; i++)
+        // {
+        //     bullet_pos.x = power_array[i].first;
+        
+        //     bullet_pos.y = power_array[i].second;
+            
+        //     cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
+        //     SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+        // }
+
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);

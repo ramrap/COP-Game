@@ -13,6 +13,7 @@ struct node *bullets_server = NULL;
 set<pair<int,int> > power_server;
 
 
+
 int number_of_connected_clients = 0;
 
 void prepare_server(int *sock, struct sockaddr_in *server_sock) {
@@ -44,7 +45,11 @@ void init_players_tab() {
         players_server[i].position.h = PLAYER_HEIGHT;
         players_server[i].position.x = SPAWN_X;
         players_server[i].position.y = SPAWN_Y;
+        players_server[i].powerA = 0;
+        players_server[i].powerATime = 0;
+
     }
+
 }
 
 void* server_receive_loop(void *arg) {
@@ -110,7 +115,7 @@ int get_bullet_array(struct node *list, int16_t **array) {
 
 void* server_send_loop(void *arg) {
     int socket = *((int *) arg);
-    int16_t tab[5];
+    int16_t tab[20+2*MAX_POWER];
     struct timeval start, stop;
     double time_interval;
     int killer;
@@ -156,7 +161,21 @@ void* server_send_loop(void *arg) {
                 tab[2] = players_server[j].position.y;
                 tab[3] = players_server[j].kills;
                 tab[4] = players_server[j].deaths;
-                send_data(socket, clients_addresses[i], tab, 5);
+                tab[5] = players_server[j].powerA;
+                tab[6] = players_server[i].powerATime;
+                for(int k=7;k<7+MAX_POWER;k++){
+                    tab[k]=(100+k*32);
+                    cout<<k<<" "<<50+k*32<<endl;
+                }
+                for(int k=7+MAX_POWER;k<7+2*MAX_POWER;k++){
+                    tab[k]=100+32;
+                    cout<<k<<" "<<tab[k]<<endl;
+                }
+                for(int k=1;k<18;k++){
+                    cout<<tab[k]<< " ";
+                }
+                cout<<endl;
+                send_data(socket, clients_addresses[i], tab, 20);
                 usleep(20);
             }
             send_data(socket, clients_addresses[i], bullet_array, 1 + (bullets_n * 2));
