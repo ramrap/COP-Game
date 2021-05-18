@@ -135,7 +135,7 @@ void* server_send_loop(void *arg) {
 
         vector<pair<int,int> >freespace;
         getMap(freespace);
-        cout<<bullets_n<<endl;
+        // cout<<bullets_n<<endl;
         if(bullets_n<5){
             int randomIndex = rand() % freespace.size();
             struct Bullet temp;

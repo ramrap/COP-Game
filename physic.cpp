@@ -6,6 +6,9 @@
 #include "physic.hpp"
 #include "constans.hpp"
 #include "maze.hpp"
+#include "audio.hpp"
+// #include "main.cpp"
+// #include "audio.hpp"
 
 int map[15][20] = {
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
@@ -138,6 +141,7 @@ void move_bullets(struct node **bullets)
 
 int check_if_player_dies(struct Player *player, struct node **bullets, int *killer)
 {
+    // effect.load("./music/laser_Shoot.bfxrsound");
     struct node *next = *bullets;
     struct SDL_Rect b;
     struct SDL_Rect p = player->position;
@@ -152,6 +156,9 @@ int check_if_player_dies(struct Player *player, struct node **bullets, int *kill
         {
             *killer = ((struct Bullet *)next->data)->player_id;
             erase_element(bullets, i);
+            //  Mix_PlayChannel(gMusic, -1,0);
+            // play_music("./music/laser_Shoot.bfxrsound");
+            // effect.play();
             return true;
         }
         next = next->next;
