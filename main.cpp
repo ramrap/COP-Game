@@ -198,7 +198,7 @@ int main()
     SDL_Event e;
 
     Audio effect;
-    effect.load("music/Laser_Shoot.wav");
+    effect.load("music/pacman_intro.wav");
 
     while (1)
     {
