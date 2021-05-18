@@ -17,7 +17,7 @@ void prepare_server(int *sock, struct sockaddr_in *server_sock) {
     if ((*sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
         perror("socket failed");
     }
-    if (bind(*sock, (struct sockaddr*) server_sock, sizeof(struct sockaddr)) < 0) {
+    if (::bind(*sock, (struct sockaddr*) server_sock, sizeof(struct sockaddr)) < 0) {
         perror("bind server error");
     }
 }

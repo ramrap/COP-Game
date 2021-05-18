@@ -1,3 +1,4 @@
+#pragma once
 #include "string"
 #include "vector"
 #include "unordered_map"
@@ -8,6 +9,7 @@
 #include "algorithm"
 #include "stack"
 using namespace std;
+
 
 class Solution{
 public:
@@ -24,14 +26,14 @@ public:
         _maze(map, 0, 0);
     }
 
-    int showMaze(vector<vector<int>>& map){
+    void showMaze(vector<vector<int>>& map){
         
         for (int i = 0; i < map.size(); ++i)
         {
             for (int j = 0; j < map[0].size(); ++j)
             {
                 cout<<map[i][j];
-                maze[i][j]=map[i][j];
+                
             }
             cout<<endl;
         }
@@ -92,19 +94,3 @@ public:
         b = c;
     }
 };
-int main(int argc, char const *argv[])
-{
-	Solution s;
-    int height = 6;
-    int width = 6;
-    srand(time(0));
-    vector<int> row(width);
-    vector<vector<int>> map;
-    for (int i = 0; i < height; ++i)
-    {
-        map.push_back(row);
-    }
-    s.maze(map);
-    s.showMaze(map);
-    return 0;
-}

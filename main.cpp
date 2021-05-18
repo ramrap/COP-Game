@@ -120,6 +120,10 @@ int main(){
         return 1;
     }
 
+    getMap();
+
+    
+
     renderer = SDL_CreateRenderer(window, -1,
             SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
