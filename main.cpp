@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <set>
+#include <utility>
 #include <pthread.h>
 #include <time.h>
 #include <stdint.h>
@@ -17,6 +21,8 @@ struct Player players[MAX_PLAYERS];
 int number_of_players = 0;
 int16_t my_id = -1;
 int16_t bullets_client[256];
+
+
 int bullets_number = 0;
 
 SDL_Texture* load_texture(SDL_Renderer *renderer, char *file) {
@@ -31,6 +37,7 @@ SDL_Texture* load_texture(SDL_Renderer *renderer, char *file) {
 void init_players() {
     int i;
     for (i = 0; i < MAX_PLAYERS; i++) {
+
         players[i].position.x = SPAWN_X;
         players[i].position.y = SPAWN_Y;
         players[i].position.w = PLAYER_WIDTH;
@@ -47,6 +54,7 @@ void init_players() {
         players[i].reloading = false;
         players[i].kills = 0;
         players[i].deaths = 0;
+        
     }
 }
 
@@ -102,6 +110,7 @@ int main(){
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Texture *tex = NULL;
     SDL_Texture *bullet = NULL;
+    SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
     TTF_Init();
     TTF_Font *font;
@@ -120,9 +129,6 @@ int main(){
         return 1;
     }
 
-    getMap();
-
-    
 
     renderer = SDL_CreateRenderer(window, -1,
             SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -133,9 +139,10 @@ int main(){
         SDL_Quit();
         return 1;
     }
-    map = get_map_texture(renderer);
+    
     tex = load_texture(renderer, "resources/player.bmp");
     bullet = load_texture(renderer, "resources/bullet.bmp");
+    power = load_texture(renderer, "resources/power2.png");
     int i;
     server_or_client(renderer, &menu, font);
     if (menu == 'c') {
@@ -161,9 +168,12 @@ int main(){
     SDL_Rect bullet_pos;
     bullet_pos.w = BULLET_HEIGHT;
     bullet_pos.h = BULLET_HEIGHT;
+    map = get_map_texture(renderer);
 
-
+    
     SDL_Event e;
+
+    // getMap();
 
     while (1) {
         if (SDL_PollEvent(&e)) {
@@ -172,6 +182,7 @@ int main(){
             }
             resolve_keyboard(e, &players[my_id]);
         }
+      
         send_to_server(sock_client, server_addr, my_id, key_state_from_player(&players[my_id]));
         usleep(30);
         SDL_RenderClear(renderer);
@@ -194,12 +205,17 @@ int main(){
             disp_text(renderer, deaths, font, 460, 30 + i * 20);
         }
 
+        
         for (i = 0; i < bullets_number; i++) {
             bullet_pos.x = bullets_client[i*2];
             bullet_pos.y = bullets_client[i*2 + 1];
             SDL_RenderCopy(renderer, bullet, NULL, &bullet_pos);
         }
+        
+
+        
         SDL_RenderPresent(renderer);
+        SDL_RenderClear(renderer);
     }
 
     close(sock_client);

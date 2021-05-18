@@ -19,6 +19,11 @@ struct Bullet {
     int player_id;
 };
 
+struct Power {
+    SDL_Rect position;
+    
+};
+
 
 
 void resolve_player_key_up(int key, struct Player* player);

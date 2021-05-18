@@ -10,6 +10,9 @@
 struct sockaddr_in clients_addresses[MAX_PLAYERS];
 struct Player players_server[MAX_PLAYERS];
 struct node *bullets_server = NULL;
+set<pair<int,int> > power_server;
+
+
 int number_of_connected_clients = 0;
 
 void prepare_server(int *sock, struct sockaddr_in *server_sock) {
@@ -71,6 +74,7 @@ void* server_receive_loop(void *arg) {
                 temp.player_id = client_pos;
                 push_element(&bullets_server, &temp, sizeof(struct Bullet));
             }
+
             players_server[client_pos].reloading = players_server[client_pos].shoot;
         }
         if (tab[0] == -1 && client_pos < MAX_PLAYERS) {
@@ -117,14 +121,34 @@ void* server_send_loop(void *arg) {
         for (i = 0; i < number_of_connected_clients; i++) {
             move_player(&players_server[i]);
             if (check_if_player_dies(&players_server[i], &bullets_server, &killer)) {
-                players_server[i].position.x = SPAWN_X;
-                players_server[i].position.y = SPAWN_Y;
+                // players_server[i].position.x = SPAWN_X;
+                // players_server[i].position.y = SPAWN_Y;
                 players_server[i].deaths++;
                 players_server[killer].kills++;
+            }
+            if(check_if_player_power(&players_server[i],power_server)){
+                players_server[i].kills++;
             }
         }
         int16_t *bullet_array = NULL;
         int bullets_n = get_bullet_array(bullets_server, &bullet_array);
+
+        vector<pair<int,int> >freespace;
+        getMap(freespace);
+        cout<<bullets_n<<endl;
+        if(bullets_n<5){
+            int randomIndex = rand() % freespace.size();
+            struct Bullet temp;
+            temp.position.x = freespace[randomIndex].first*TILE_SIZE;
+            temp.position.y = freespace[randomIndex].second*TILE_SIZE;
+            temp.position.w = BULLET_WIDTH;
+            temp.position.h = BULLET_HEIGHT;
+
+            push_element(&bullets_server, &temp, sizeof(struct Bullet));
+
+        }
+        
+        
         for (i = 0; i < number_of_connected_clients; i++) {
             for (j = 0; j < number_of_connected_clients; j++) {
                 tab[0] = j;

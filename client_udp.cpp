@@ -20,7 +20,6 @@ void send_to_server(int sock, struct sockaddr_in serv_addr, int16_t id, int16_t 
             (struct sockaddr *) &serv_addr, serv_addr_size) < 0) {
         perror("sendto error");
     }
- 
 }
 
 int client_listen(int sock, int16_t *tab){
