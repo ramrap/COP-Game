@@ -2,8 +2,10 @@
 #define PHYSIC_H
 
 #include <SDL.h>
+#include <vector>
 #include "objects.hpp"
 #include "list.hpp"
+// #include "maze.hpp"
 
 void move_player(struct Player *player); 
 SDL_Texture* get_map_texture(SDL_Renderer *renderer);
