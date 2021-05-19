@@ -146,7 +146,9 @@ int main()
         cout << "Failed to load SDL \n";
     };
     SDL_Texture *tex = NULL;
+   
     SDL_Texture *bullet = NULL;
+     SDL_Texture *fire = NULL;
     SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
     TTF_Init();
@@ -178,8 +180,9 @@ int main()
         return 1;
     }
 
-    tex = load_texture(renderer, "resources/player1.bmp");
-    bullet = load_texture(renderer, "resources/fire.bmp");
+    tex = load_texture(renderer, "resources/player2.bmp");
+    fire = load_texture(renderer, "resources/fire.bmp");
+    bullet = load_texture(renderer, "resources/bullet.bmp");
     power = load_texture(renderer, "resources/power2.png");
     int i;
     server_or_client(renderer, &menu, font);
@@ -254,22 +257,27 @@ int main()
             disp_text(renderer, deaths, font, 460, 30 + i * 20);
         }
 
+        bullet_pos.w = BULLET_HEIGHT;
+        bullet_pos.h = BULLET_HEIGHT;
+
         for (i = 0; i < bullets_number; i++)
         {
             bullet_pos.x = bullets_client[i * 2];
             bullet_pos.y = bullets_client[i * 2 + 1];
+            
             SDL_RenderCopy(renderer, bullet, NULL, &bullet_pos);
         }
-        cout<<"power_array \n";
-        //  for (i = 0; i <MAX_POWER; i++)
-        // {
-        //     bullet_pos.x = power_array[i].first;
-        
-        //     bullet_pos.y = power_array[i].second;
+        // cout<<"power_array \n";
+        bullet_pos.w = FIRE_HEIGHT;
+        bullet_pos.h = FIRE_HEIGHT;
+         for (i = 0; i <MAX_POWER; i++)
+        {
+            bullet_pos.x = power_array[i].first;
+            bullet_pos.y = power_array[i].second;
             
-        //     cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
-        //     SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
-        // }
+            // cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
+            SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+        }
 
 
         SDL_RenderPresent(renderer);

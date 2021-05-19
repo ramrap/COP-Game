@@ -127,7 +127,7 @@ void move_bullets(struct node **bullets)
     while (next != NULL)
     {
         b = (struct Bullet *)next->data;
-        b->position.x += (PLAYER_SPEED/10) * b->face * 1;
+        b->position.x += (PLAYER_SPEED) * b->face * 1;
         next = next->next;
         if (check_collisions(&b->position))
         {

@@ -77,11 +77,14 @@ void* server_receive_loop(void *arg) {
                     temp.position.x -= BULLET_WIDTH;
                 }
                 temp.player_id = client_pos;
-                push_element(&bullets_server, &temp, sizeof(struct Bullet));
+                push_element(&bullets_server, &temp, sizeof(struct Bullet)); 
             }
 
             players_server[client_pos].reloading = players_server[client_pos].shoot;
         }
+        // if(tab[0]){
+
+        // }
         if (tab[0] == -1 && client_pos < MAX_PLAYERS) {
             add_adr_to_list(client_pos, &client_addr);
             int16_t tab[3];
@@ -141,17 +144,7 @@ void* server_send_loop(void *arg) {
         vector<pair<int,int> >freespace;
         getMap(freespace);
         // cout<<bullets_n<<endl;
-        if(bullets_n<5){
-            int randomIndex = rand() % freespace.size();
-            struct Bullet temp;
-            temp.position.x = freespace[randomIndex].first*TILE_SIZE;
-            temp.position.y = freespace[randomIndex].second*TILE_SIZE;
-            temp.position.w = BULLET_WIDTH;
-            temp.position.h = BULLET_HEIGHT;
-
-            push_element(&bullets_server, &temp, sizeof(struct Bullet));
-
-        }
+        
         
         
         for (i = 0; i < number_of_connected_clients; i++) {
@@ -168,7 +161,7 @@ void* server_send_loop(void *arg) {
                     cout<<k<<" "<<50+k*32<<endl;
                 }
                 for(int k=7+MAX_POWER;k<7+2*MAX_POWER;k++){
-                    tab[k]=100+32;
+                    tab[k]=300;
                     cout<<k<<" "<<tab[k]<<endl;
                 }
                 for(int k=1;k<18;k++){

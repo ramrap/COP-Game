@@ -4,6 +4,7 @@
 void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
     SDL_Event e;
     int pressed = false;
+    disp_text(renderer, "COP290", font, 100, 100);
     while (!pressed) {
         if (SDL_PollEvent(&e)) {
             if (e.type == SDL_KEYDOWN) {
@@ -14,11 +15,12 @@ void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
                     *menu = 's';
                     pressed = true;
                 }
+
             }
         }
         usleep(200);
         SDL_RenderClear(renderer);
-        disp_text(renderer, "[s]erver or [c]lient?", font, 240, 200);
+        disp_text(renderer, "[s]erver or [c]lient?", font, 260, 200);
         SDL_RenderPresent(renderer);
     }
 }
