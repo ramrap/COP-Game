@@ -1,0 +1,4 @@
+1) Decided to Use DFS in Map so All house will be present at end of maze instead of corners
+2) Once House is stolen it will be marked Red.
+3) Genrating Random Maze as of now but have to change seed value in CODE . (Tried to send seed value through socket when new client joins but failed to implement before deadline).
+4) Small Animations While player was moving.

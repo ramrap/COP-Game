@@ -25,12 +25,12 @@ struct Player players[MAX_PLAYERS];
 int number_of_players = 0;
 int16_t my_id = -1;
 int16_t bullets_client[256];
-int16_t winner =-1;
+int16_t winner = -1;
 
-vector<pair<int,int>>power_array(MAX_POWER);
+vector<pair<int, int>> power_array(MAX_POWER);
 
 int bullets_number = 0;
-bool running=true;
+bool running = true;
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, char *file)
 {
@@ -41,9 +41,6 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, char *file)
     SDL_FreeSurface(bitmap);
     return texture;
 }
-
-
-
 
 void init_players()
 {
@@ -116,20 +113,20 @@ void *client_loop(void *arg)
             players[id].wins = tab[5];
             players[id].powerA = tab[6];
             // cout<<tab[5]<<" =<"<<id<<endl;
-            if(players[id].wins>=1){
-                
-                winner=id;
-                cout<<"Winner "<<id<<"\n";
+            if (players[id].wins >= 3)
+            {
+
+                winner = id;
+                // cout<<"Winner "<<id<<"\n";
             }
-            
-            for(int i=7;i<7+MAX_POWER;i++){
-               
-                power_array[i-7].first=tab[i];
-                power_array[i-7].second=tab[i+MAX_POWER];
+
+            for (int i = 7; i < 7 + MAX_POWER; i++)
+            {
+
+                power_array[i - 7].first = tab[i];
+                power_array[i - 7].second = tab[i + MAX_POWER];
             }
             updatePowerArray(power_array);
-
-
         }
         if (id == -2)
         {
@@ -137,16 +134,15 @@ void *client_loop(void *arg)
             memcpy(bullets_client, tab + 1, sizeof(int16_t) * 2 * bullets_in_array);
             bullets_number = bullets_in_array;
         }
-        if(id == -3){
-            running=false;
-            winner=tab[1];
-            cout<<"WINNER DECLARED \n";
+        if (id == -3)
+        {
+            running = false;
+            winner = tab[1];
+            cout << "WINNER DECLARED \n";
         }
         usleep(50);
     }
 }
-
-
 
 int main()
 {
@@ -162,9 +158,9 @@ int main()
         cout << "Failed to load SDL \n";
     };
     SDL_Texture *tex = NULL;
-   
+
     SDL_Texture *bullet = NULL;
-     SDL_Texture *fire = NULL;
+    SDL_Texture *fire = NULL;
     SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
     SDL_Texture *build = NULL;
@@ -193,7 +189,7 @@ int main()
     Audio music;
     music.load("music/base.wav");
     music.play();
-    
+
     if (renderer == NULL)
     {
         SDL_DestroyWindow(window);
@@ -208,7 +204,7 @@ int main()
     build = load_texture(renderer, "resources/building.bmp");
     power = load_texture(renderer, "resources/power2.png");
     bomb = load_texture(renderer, "resources/bomb.bmp");
-    
+
     int i;
     server_or_client(renderer, &menu, font);
     if (menu == 'c')
@@ -247,13 +243,12 @@ int main()
 
     while (running)
     {
-         if(winner>=0){
-           break;
+        if (winner >= 0)
+        {
+            break;
         }
-       
-        effect.play();
 
-        
+        effect.play();
 
         if (SDL_PollEvent(&e))
         {
@@ -263,7 +258,6 @@ int main()
             }
             resolve_keyboard(e, &players[my_id]);
         }
-        
 
         send_to_server(sock_client, server_addr, my_id, key_state_from_player(&players[my_id]));
         usleep(30);
@@ -297,39 +291,36 @@ int main()
         {
             bullet_pos.x = bullets_client[i * 2];
             bullet_pos.y = bullets_client[i * 2 + 1];
-            
+
             SDL_RenderCopy(renderer, bullet, NULL, &bullet_pos);
         }
         // cout<<"power_array \n";
         bullet_pos.w = FIRE_HEIGHT;
         bullet_pos.h = FIRE_HEIGHT;
-         for (i = 0; i <MAX_POWER; i++)
+        for (i = 0; i < MAX_POWER; i++)
         {
             bullet_pos.x = power_array[i].first;
             bullet_pos.y = power_array[i].second;
-            if(i%2==0){
-SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+            if (i % 2 == 0)
+            {
+                SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
             }
-            else{
+            else
+            {
                 SDL_RenderCopy(renderer, bomb, NULL, &bullet_pos);
             }
             // cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
-            
         }
-
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
-
-         
     }
     SDL_RenderClear(renderer);
     // int i=0;.
-    
-    
-    winningscreen(winner,renderer,font);
-     usleep(3000000);
-   
+
+    winningscreen(winner, renderer, font);
+    usleep(3000000);
+
     close(sock_client);
     close(sock_server);
     pthread_cancel(thread_id_client);
@@ -337,9 +328,6 @@ SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
     pthread_cancel(thread_id_server_send);
     effect.stop();
 
-   
-
-    
     Mix_Quit();
     SDL_DestroyTexture(tex);
     SDL_DestroyTexture(bullet);

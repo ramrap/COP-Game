@@ -2,8 +2,8 @@
 #define LIST_H
 #include <stdio.h>
 
-
-struct node {
+struct node
+{
     void *data;
     struct node *next;
 };

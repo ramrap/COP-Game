@@ -20,7 +20,6 @@ struct PowerUps playerPower[2];
 
 int map[15][20];
 
-
 //----GLOBAL VARIABLES------------------------------------------------
 char grid[GRID_WIDTH * GRID_HEIGHT];
 
@@ -135,8 +134,6 @@ void PrintGrid()
         cout << endl;
     }
 }
-
-
 
 vector<pair<int, int>> getPowerArray()
 {
@@ -281,7 +278,7 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
     // struct node *next = *bullets;
     struct SDL_Rect p = player->position;
     SDL_Rect rect;
-    bool a=false;
+    bool a = false;
 
     for (int i = 0; i < power_server.size(); i++)
     {
@@ -305,25 +302,24 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
             power_server[i].second = 0;
 
             // SDL_RenderCopy(renderer, , NULL, &rect);
-            a=true;
+            a = true;
             break;
         }
     }
-
 
     // if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
     // {
     //     // map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
     //     a=true;
     // }
-    if (a==true){
+    if (a == true)
+    {
         Mix_Music *gMusic = NULL;
-        Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 );
-        
-        gMusic = Mix_LoadMUS( "music/Laser_Shoot.wav" );
-        Mix_PlayMusic( gMusic, 1 );
-    }
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
+        gMusic = Mix_LoadMUS("music/Laser_Shoot.wav");
+        Mix_PlayMusic(gMusic, 1);
+    }
 
     return a;
 }
@@ -331,11 +327,16 @@ bool check_if_player_reach(struct Player *player)
 {
     struct SDL_Rect p = player->position;
 
-    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 )
+    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
     {
 
         cout << p.y / TILE_SIZE << "-- " << p.x / TILE_SIZE << endl;
-        // map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 2;
+        map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
+        Mix_Music *gMusic = NULL;
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+        gMusic = Mix_LoadMUS("music/Laser_Shoot.wav");
+        Mix_PlayMusic(gMusic, 1);
         return true;
     }
     return false;
@@ -403,7 +404,7 @@ void move_player(struct Player *player)
 SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
 
-    int alpha=1000;
+    int alpha = 56;
     // cout << "Give seed for maze \n";
     // cin >> alpha;
     srand(alpha); // seed random number generator.
@@ -424,7 +425,7 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 
     bitmap = SDL_LoadBMP("resources/tile1.bmp");
 
-  SDL_Texture *tex = NULL;
+    SDL_Texture *tex = NULL;
     tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
     SDL_Texture *ini = NULL;
@@ -438,10 +439,9 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
     map_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_SetRenderTarget(renderer, map_texture);
 
-
     rect.x = TILE_SIZE * 1;
     rect.y = TILE_SIZE * 1;
-    SDL_RenderCopy(renderer, ini, NULL, &rect);    
+    SDL_RenderCopy(renderer, ini, NULL, &rect);
     int i, j;
     for (i = 0; i < GRID_HEIGHT; i++)
     {
@@ -461,8 +461,9 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
                 rect.y = TILE_SIZE * i;
                 SDL_RenderCopy(renderer, build, NULL, &rect);
             }
-            else{
-                freespace.push_back(make_pair(i,j));
+            else
+            {
+                freespace.push_back(make_pair(i, j));
             }
         }
         cout << endl;

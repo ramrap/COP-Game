@@ -4,12 +4,14 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-class Audio {
+class Audio
+{
 public:
     ~Audio();
-    void load(const char* filename);
+    void load(const char *filename);
     void play();
     void stop();
+
 private:
     SDL_AudioSpec wavSpec;
     Uint32 wavLength;

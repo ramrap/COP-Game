@@ -12,5 +12,4 @@
 
 #include "physic.hpp"
 
-vector<pair<int,int> >freespace;
-
+vector<pair<int, int>> freespace;

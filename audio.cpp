@@ -1,27 +1,31 @@
 #include "audio.hpp"
 
-Audio::~Audio() {
+Audio::~Audio()
+{
     SDL_CloseAudioDevice(deviceId);
     SDL_FreeWAV(wavBuffer);
 }
 
-void Audio::load(const char* filename) {
-    std::cout<<"will play music lodaed "<<filename<< "\n";
+void Audio::load(const char *filename)
+{
+    // std::cout<<"will play music lodaed "<<filename<< "\n";
     SDL_LoadWAV(filename, &wavSpec, &wavBuffer, &wavLength);
     deviceId = SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
 }
 
-void Audio::play() {
+void Audio::play()
+{
     // std::cout<<"will play music \n";
     SDL_QueueAudio(deviceId, wavBuffer, wavLength);
     SDL_PauseAudioDevice(deviceId, 0);
 }
-void Audio::stop(){
+void Audio::stop()
+{
     SDL_CloseAudioDevice(deviceId);
 }
-void play_music(const char* filename){
+void play_music(const char *filename)
+{
     Audio effect;
     effect.load(filename);
     effect.play();
 }
-
