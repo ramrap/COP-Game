@@ -29,6 +29,7 @@ int16_t bullets_client[256];
 vector<pair<int,int>>power_array(MAX_POWER);
 
 int bullets_number = 0;
+bool running=true;
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, char *file)
 {
@@ -69,6 +70,7 @@ void init_players()
         players[i].powerATime = 0;
         players[i].powerB = 0;
         players[i].powerBTime = 0;
+        players[i].wins = 0;
     }
 }
 
@@ -110,13 +112,16 @@ void *client_loop(void *arg)
             players[id].position.y = tab[2];
             players[id].kills = tab[3];
             players[id].deaths = tab[4];
-            players[id].powerA = tab[5];
+            players[id].wins = tab[5];
+            players[id].powerA = tab[6];
+
             
             for(int i=7;i<7+MAX_POWER;i++){
                
                 power_array[i-7].first=tab[i];
                 power_array[i-7].second=tab[i+MAX_POWER];
             }
+            updatePowerArray(power_array);
 
 
         }
@@ -151,6 +156,7 @@ int main()
      SDL_Texture *fire = NULL;
     SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
+    SDL_Texture *build = NULL;
     TTF_Init();
     TTF_Font *font;
     font = TTF_OpenFont("resources/m5x7.ttf", 24);
@@ -183,6 +189,7 @@ int main()
     tex = load_texture(renderer, "resources/player2.bmp");
     fire = load_texture(renderer, "resources/fire.bmp");
     bullet = load_texture(renderer, "resources/bullet.bmp");
+    build = load_texture(renderer, "resources/building.bmp");
     power = load_texture(renderer, "resources/power2.png");
     int i;
     server_or_client(renderer, &menu, font);
@@ -219,7 +226,7 @@ int main()
     Audio effect;
     effect.load("music/pacman_intro.wav");
 
-    while (1)
+    while (running)
     {
         effect.play();
 
@@ -249,11 +256,11 @@ int main()
             disp_text(renderer, kills, font, 400, 30 + i * 20);
         }
 
-        disp_text(renderer, "deaths", font, 460, 10);
+        disp_text(renderer, "wins", font, 460, 10);
         for (i = 0; i <= number_of_players; i++)
         {
             char deaths[10] = {};
-            sprintf(deaths, "%d", players[i].deaths);
+            sprintf(deaths, "%d", players[i].wins);
             disp_text(renderer, deaths, font, 460, 30 + i * 20);
         }
 

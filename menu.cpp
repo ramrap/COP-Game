@@ -21,6 +21,7 @@ void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
         usleep(200);
         SDL_RenderClear(renderer);
         disp_text(renderer, "[s]erver or [c]lient?", font, 260, 200);
+        // disp_text(renderer, "[elp?", font, 260, 150);
         SDL_RenderPresent(renderer);
     }
 }

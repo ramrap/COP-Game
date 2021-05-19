@@ -4,12 +4,13 @@
 #include <utility>
 
 #include "physic.hpp"
-#include "constans.hpp"
-#include "maze.hpp"
-#include "audio.hpp"
+ 
+
 // #include "main.cpp"
 // #include "audio.hpp"
 
+// powerUps PlayerPower;
+struct PowerUps playerPower[2];
 
 int map[15][20] = {
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
@@ -25,10 +26,30 @@ int map[15][20] = {
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1},
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+    {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 vector<pair<int, int>> freespace;
+
+
+vector<pair<int,int>> getPowerArray(){
+    vector<pair<int,int>> powerArray(MAX_POWER,make_pair(0,0));
+
+    for(int i=0;i<MAX_POWER;i++){
+        powerArray[i].first = playerPower[1].powerX[i];
+         powerArray[i].second = playerPower[1].powerY[i];
+    }
+    return powerArray;
+}
+
+void updatePowerArray(vector<pair<int,int>> t){
+    for(int i=0;i<MAX_POWER;i++){
+        playerPower[1].powerX[i] = t[i].first  ;
+        playerPower[1].powerY[i] = t[i].second ;
+    }
+    return;
+
+}
 
 void getMap(vector<pair<int, int>> &freespace)
 {
@@ -167,29 +188,30 @@ int check_if_player_dies(struct Player *player, struct node **bullets, int *kill
     }
     return false;
 }
-int check_if_player_power(struct Player *player, set<pair<int, int>> &power_server)
+int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_server)
 {
     // struct node *next = *bullets;
     struct SDL_Rect p = player->position;
     SDL_Rect rect;
 
-    for (auto i : power_server)
+    for (int i =0; i<power_server.size();i++)
     {
-        int x = i.first, y = i.second;
-        map[x / TILE_SIZE][y / TILE_SIZE] = 2;
+        int x = power_server[i].first, y =  power_server[i].second;
+        // map[x / TILE_SIZE][y / TILE_SIZE] = 2;
 
-        if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-            map[(p.y + p.h) / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-            map[(p.y) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2 ||
-            map[(p.y + p.h) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2
+        if (
+            (p.x < (x + FIRE_HEIGHT) &&
+            (p.x + p.w) > x &&
+            p.y < (y + FIRE_HEIGHT) &&
+            (p.y + p.h) > y)
 
         )
         {
 
-            map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-            rect.x = TILE_SIZE * (p.y / TILE_SIZE);
-            rect.y = TILE_SIZE * (p.x / TILE_SIZE);
-            power_server.erase(i);
+            
+            power_server[i].first=0;
+            power_server[i].second=0;
+
             // SDL_RenderCopy(renderer, , NULL, &rect);
             return true;
         }
@@ -205,7 +227,25 @@ int check_if_player_power(struct Player *player, set<pair<int, int>> &power_serv
 
     return false;
 }
+bool check_if_player_reach(struct Player *player){
+    struct SDL_Rect p = player->position;
 
+     if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
+            map[(p.y + p.h) / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
+            map[(p.y) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2 ||
+            map[(p.y + p.h) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2
+        )
+        {
+
+            cout<<p.y / TILE_SIZE<<"-- "<<p.x / TILE_SIZE<<endl;
+           
+            // SDL_RenderCopy(renderer, , NULL, &rect);
+            return true;
+        }
+    return false;
+    
+
+}
 void move_player(struct Player *player)
 {
     int x_movement = 0;
@@ -260,17 +300,21 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
     cout<<"map updated \n";
     SDL_Surface *bitmap = NULL;
+    
     SDL_Texture *map_texture;
     SDL_Rect rect;
     rect.w = TILE_SIZE;
     rect.h = TILE_SIZE;
     bitmap = SDL_LoadBMP("resources/tile1.bmp");
+    
     SDL_Texture *tex = NULL;
     tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
-    bitmap = SDL_LoadBMP("resources/bullet.bmp");
-    SDL_Texture *power = NULL;
-    power = SDL_CreateTextureFromSurface(renderer, bitmap);
+    bitmap = SDL_LoadBMP("resources/building.bmp");
+    SDL_Texture *build = NULL;
+    build = SDL_CreateTextureFromSurface(renderer, bitmap);
+
+  
 
     map_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_SetRenderTarget(renderer, map_texture);
@@ -286,9 +330,10 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
                 SDL_RenderCopy(renderer, tex, NULL, &rect);
             }
             else if(map[i][j]==2){
+                cout<<i<<" "<<j<<endl;
                 rect.x = TILE_SIZE * j;
                 rect.y = TILE_SIZE * i;
-                SDL_RenderCopy(renderer, power, NULL, &rect);
+                SDL_RenderCopy(renderer, build, NULL, &rect);
 
             }
         }
