@@ -1,6 +1,6 @@
 #include "objects.hpp"
-#include "physic.hpp"
-#include "constans.hpp"
+
+// #include "constans.hpp"
 
 
 void resolve_player_key_down(int key, struct Player* player) {

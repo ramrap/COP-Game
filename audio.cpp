@@ -16,7 +16,9 @@ void Audio::play() {
     SDL_QueueAudio(deviceId, wavBuffer, wavLength);
     SDL_PauseAudioDevice(deviceId, 0);
 }
-
+void Audio::stop(){
+    SDL_CloseAudioDevice(deviceId);
+}
 void play_music(const char* filename){
     Audio effect;
     effect.load(filename);

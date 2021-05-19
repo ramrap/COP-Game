@@ -2,6 +2,8 @@
 #define OBJECTS_H
 
 #include <SDL.h>
+#include "physic.hpp"
+#include "constans.hpp"
 
 struct Player {
     SDL_Rect position;
@@ -11,6 +13,7 @@ struct Player {
     int face, shoot, reloading;
     int left_key, right_key, up_key, down_key, attack_key;
     int kills, deaths;
+    int wins;
     int powerA,powerATime, powerB, powerBTime;
 };
 
@@ -22,8 +25,17 @@ struct Bullet {
 
 struct Power {
     SDL_Rect position;
-    
 };
+
+struct PowerUps{
+    int count = 0;
+    int powerX[MAX_POWER];
+    int powerY[MAX_POWER];
+};
+
+
+
+
 
 
 

@@ -25,10 +25,12 @@ struct Player players[MAX_PLAYERS];
 int number_of_players = 0;
 int16_t my_id = -1;
 int16_t bullets_client[256];
+int16_t winner =-1;
 
 vector<pair<int,int>>power_array(MAX_POWER);
 
 int bullets_number = 0;
+bool running=true;
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, char *file)
 {
@@ -69,6 +71,7 @@ void init_players()
         players[i].powerATime = 0;
         players[i].powerB = 0;
         players[i].powerBTime = 0;
+        players[i].wins = 0;
     }
 }
 
@@ -110,13 +113,20 @@ void *client_loop(void *arg)
             players[id].position.y = tab[2];
             players[id].kills = tab[3];
             players[id].deaths = tab[4];
-            players[id].powerA = tab[5];
+            players[id].wins = tab[5];
+            players[id].powerA = tab[6];
+            if(players[id].wins>=3){
+                
+                winner=id;
+                cout<<"Winner "<<id<<"\n";
+            }
             
             for(int i=7;i<7+MAX_POWER;i++){
                
                 power_array[i-7].first=tab[i];
                 power_array[i-7].second=tab[i+MAX_POWER];
             }
+            updatePowerArray(power_array);
 
 
         }
@@ -125,6 +135,11 @@ void *client_loop(void *arg)
             bullets_in_array = (length - sizeof(int16_t)) / (sizeof(int16_t) * 2);
             memcpy(bullets_client, tab + 1, sizeof(int16_t) * 2 * bullets_in_array);
             bullets_number = bullets_in_array;
+        }
+        if(id == -3){
+            running=false;
+            winner=tab[1];
+            cout<<"WINNER DECLARED \n";
         }
         usleep(50);
     }
@@ -146,9 +161,13 @@ int main()
         cout << "Failed to load SDL \n";
     };
     SDL_Texture *tex = NULL;
+   
     SDL_Texture *bullet = NULL;
+     SDL_Texture *fire = NULL;
     SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
+    SDL_Texture *build = NULL;
+    SDL_Texture *bomb = NULL;
     TTF_Init();
     TTF_Font *font;
     font = TTF_OpenFont("resources/m5x7.ttf", 24);
@@ -170,6 +189,10 @@ int main()
     renderer = SDL_CreateRenderer(window, -1,
                                   SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
+    Audio music;
+    music.load("music/base.wav");
+    music.play();
+    
     if (renderer == NULL)
     {
         SDL_DestroyWindow(window);
@@ -178,9 +201,13 @@ int main()
         return 1;
     }
 
-    tex = load_texture(renderer, "resources/player1.bmp");
-    bullet = load_texture(renderer, "resources/fire.bmp");
+    tex = load_texture(renderer, "resources/player2.bmp");
+    fire = load_texture(renderer, "resources/fire.bmp");
+    bullet = load_texture(renderer, "resources/bullet.bmp");
+    build = load_texture(renderer, "resources/building.bmp");
     power = load_texture(renderer, "resources/power2.png");
+    bomb = load_texture(renderer, "resources/bomb.bmp");
+    
     int i;
     server_or_client(renderer, &menu, font);
     if (menu == 'c')
@@ -205,6 +232,7 @@ int main()
         send_to_server(sock_client, server_addr, my_id, 0);
         usleep(100);
     }
+    music.stop();
 
     SDL_Rect bullet_pos;
     bullet_pos.w = BULLET_HEIGHT;
@@ -216,9 +244,16 @@ int main()
     Audio effect;
     effect.load("music/pacman_intro.wav");
 
-    while (1)
+    while (running)
     {
         effect.play();
+
+        if(winner>=0){
+            running=false;
+            send_to_server(sock_client, server_addr, -3, winner);
+            break;
+
+        }
 
         if (SDL_PollEvent(&e))
         {
@@ -228,6 +263,7 @@ int main()
             }
             resolve_keyboard(e, &players[my_id]);
         }
+        
 
         send_to_server(sock_client, server_addr, my_id, key_state_from_player(&players[my_id]));
         usleep(30);
@@ -246,41 +282,59 @@ int main()
             disp_text(renderer, kills, font, 400, 30 + i * 20);
         }
 
-        disp_text(renderer, "deaths", font, 460, 10);
+        disp_text(renderer, "wins", font, 460, 10);
         for (i = 0; i <= number_of_players; i++)
         {
             char deaths[10] = {};
-            sprintf(deaths, "%d", players[i].deaths);
+            sprintf(deaths, "%d", players[i].wins);
             disp_text(renderer, deaths, font, 460, 30 + i * 20);
         }
+
+        bullet_pos.w = BULLET_HEIGHT;
+        bullet_pos.h = BULLET_HEIGHT;
 
         for (i = 0; i < bullets_number; i++)
         {
             bullet_pos.x = bullets_client[i * 2];
             bullet_pos.y = bullets_client[i * 2 + 1];
+            
             SDL_RenderCopy(renderer, bullet, NULL, &bullet_pos);
         }
-        cout<<"power_array \n";
-        //  for (i = 0; i <MAX_POWER; i++)
-        // {
-        //     bullet_pos.x = power_array[i].first;
-        
-        //     bullet_pos.y = power_array[i].second;
+        // cout<<"power_array \n";
+        bullet_pos.w = FIRE_HEIGHT;
+        bullet_pos.h = FIRE_HEIGHT;
+         for (i = 0; i <MAX_POWER; i++)
+        {
+            bullet_pos.x = power_array[i].first;
+            bullet_pos.y = power_array[i].second;
+            if(i%2==0){
+SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+            }
+            else{
+                SDL_RenderCopy(renderer, bomb, NULL, &bullet_pos);
+            }
+            // cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
             
-        //     cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
-        //     SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
-        // }
+        }
 
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
-
+   
     close(sock_client);
     close(sock_server);
     pthread_cancel(thread_id_client);
     pthread_cancel(thread_id_server);
     pthread_cancel(thread_id_server_send);
+    effect.stop();
+
+    cout<<"HELLO \n";
+    renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    winningscreen(winner,renderer,font);
+
+    
 
     // gMusic = NULL;
     // Mix_FreeChunk(gMusic);

@@ -10,7 +10,8 @@
 struct sockaddr_in clients_addresses[MAX_PLAYERS];
 struct Player players_server[MAX_PLAYERS];
 struct node *bullets_server = NULL;
-set<pair<int,int> > power_server;
+vector<pair<int,int> > power_server;
+
 
 
 
@@ -45,6 +46,7 @@ void init_players_tab() {
         players_server[i].position.h = PLAYER_HEIGHT;
         players_server[i].position.x = SPAWN_X;
         players_server[i].position.y = SPAWN_Y;
+        players_server[i].wins= 0;
         players_server[i].powerA = 0;
         players_server[i].powerATime = 0;
 
@@ -77,11 +79,14 @@ void* server_receive_loop(void *arg) {
                     temp.position.x -= BULLET_WIDTH;
                 }
                 temp.player_id = client_pos;
-                push_element(&bullets_server, &temp, sizeof(struct Bullet));
+                push_element(&bullets_server, &temp, sizeof(struct Bullet)); 
             }
 
             players_server[client_pos].reloading = players_server[client_pos].shoot;
         }
+        // if(tab[0]){
+
+        // }
         if (tab[0] == -1 && client_pos < MAX_PLAYERS) {
             add_adr_to_list(client_pos, &client_addr);
             int16_t tab[3];
@@ -118,40 +123,71 @@ void* server_send_loop(void *arg) {
     int16_t tab[20+2*MAX_POWER];
     struct timeval start, stop;
     double time_interval;
-    int killer;
+   
+    
     while (1) {
         gettimeofday(&start, NULL);
         int i, j;
         move_bullets(&bullets_server);
+        power_server = getPowerArray();
+
+    
+    int killer;
+    int po_ind=1;
         for (i = 0; i < number_of_connected_clients; i++) {
             move_player(&players_server[i]);
             if (check_if_player_dies(&players_server[i], &bullets_server, &killer)) {
-                // players_server[i].position.x = SPAWN_X;
-                // players_server[i].position.y = SPAWN_Y;
-                players_server[i].deaths++;
+                players_server[i].position.x = SPAWN_X;
+                players_server[i].position.y = SPAWN_Y;
+                // players_server[i].deaths++;
                 players_server[killer].kills++;
             }
-            if(check_if_player_power(&players_server[i],power_server)){
-                players_server[i].kills++;
+            if(check_if_player_power(&players_server[i],power_server,po_ind)){
+                // players_server[i].kills++;
+                if(po_ind){
+                     players_server[i].position.x = SPAWN_X;
+                     players_server[i].position.y = SPAWN_Y;
+                }
+                else{
+                    players_server[i].powerATime=150;
+                    players_server[i].powerA = 1;
+                }
+                
+            }
+            if(check_if_player_reach(&players_server[i])){
+                players_server[i].wins++;
+                // cout<<"player reaches \n";
+                players_server[i].position.x = SPAWN_X;
+                players_server[i].position.y = SPAWN_Y;
+            }
+
+            if(players_server[i].powerA){
+                players_server[i].powerATime--;
+                if(players_server[i].powerATime<0){
+                    players_server[i].powerATime=0;
+                    players_server[i].powerA=0;
+                }
             }
         }
+        
         int16_t *bullet_array = NULL;
         int bullets_n = get_bullet_array(bullets_server, &bullet_array);
 
         vector<pair<int,int> >freespace;
-        getMap(freespace);
-        // cout<<bullets_n<<endl;
-        if(bullets_n<5){
-            int randomIndex = rand() % freespace.size();
-            struct Bullet temp;
-            temp.position.x = freespace[randomIndex].first*TILE_SIZE;
-            temp.position.y = freespace[randomIndex].second*TILE_SIZE;
-            temp.position.w = BULLET_WIDTH;
-            temp.position.h = BULLET_HEIGHT;
-
-            push_element(&bullets_server, &temp, sizeof(struct Bullet));
-
+        freespace = getMap();
+       
+        if(freespace.size()!=300&& freespace.size()!=0){
+        for(int i=0;i<MAX_POWER;i++){
+            if(power_server[i].first==0 || power_server[j].second==0){
+                
+                int RandIndex = rand() % freespace.size();
+                power_server[i].first = freespace[RandIndex].second*TILE_SIZE;
+                power_server[i].second = freespace[RandIndex].first*TILE_SIZE;
+                cout<<freespace[RandIndex].first<<" "<<freespace[RandIndex].second<<endl;
+            }
         }
+        }
+        
         
         
         for (i = 0; i < number_of_connected_clients; i++) {
@@ -161,20 +197,21 @@ void* server_send_loop(void *arg) {
                 tab[2] = players_server[j].position.y;
                 tab[3] = players_server[j].kills;
                 tab[4] = players_server[j].deaths;
-                tab[5] = players_server[j].powerA;
-                tab[6] = players_server[i].powerATime;
+                tab[5] = players_server[j].wins;
+                tab[6] = players_server[j].powerA;
+                tab[7] = players_server[i].powerATime;
                 for(int k=7;k<7+MAX_POWER;k++){
-                    tab[k]=(100+k*32);
-                    cout<<k<<" "<<50+k*32<<endl;
+                    tab[k]=power_server[k-7].first;
+                    // cout<<k<<" "<<50+k*32<<endl;
                 }
                 for(int k=7+MAX_POWER;k<7+2*MAX_POWER;k++){
-                    tab[k]=100+32;
-                    cout<<k<<" "<<tab[k]<<endl;
+                    tab[k]=power_server[k-7-MAX_POWER].second;
+                    // cout<<k<<" "<<tab[k]<<endl;
                 }
-                for(int k=1;k<18;k++){
-                    cout<<tab[k]<< " ";
-                }
-                cout<<endl;
+                // for(int k=1;k<18;k++){
+                //     cout<<tab[k]<< " ";
+                // }
+                // cout<<endl;
                 send_data(socket, clients_addresses[i], tab, 20);
                 usleep(20);
             }
