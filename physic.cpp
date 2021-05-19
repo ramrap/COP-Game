@@ -308,11 +308,7 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
         }
     }
 
-    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
-    {
-        map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-        return true;
-    }
+    
 
     return false;
 }
@@ -320,14 +316,11 @@ bool check_if_player_reach(struct Player *player)
 {
     struct SDL_Rect p = player->position;
 
-    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-        map[(p.y + p.h) / TILE_SIZE][p.x / TILE_SIZE] == 2 ||
-        map[(p.y) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2 ||
-        map[(p.y + p.h) / TILE_SIZE][(p.x + p.w) / TILE_SIZE] == 2)
+    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2 )
     {
 
         cout << p.y / TILE_SIZE << "-- " << p.x / TILE_SIZE << endl;
-
+        map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
         // SDL_RenderCopy(renderer, , NULL, &rect);
         return true;
     }
@@ -342,7 +335,7 @@ void move_player(struct Player *player)
     if (player->powerA)
     {
         player_speed = SLOW_PLAYER;
-        cout << "slow downed player speed \n";
+        // cout << "slow downed player speed \n";
         cout << player->powerATime << endl;
         ;
     }
@@ -396,16 +389,18 @@ void move_player(struct Player *player)
 SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
 
-    int alpha=1000;
+    int alpha=146;
     // cout << "Give seed for maze \n";
     // cin >> alpha;
     srand(alpha); // seed random number generator.
     ResetGrid();
     Visit(1, 1);
     PrintGrid();
-    map[14][1] = 2;
+    map[13][1] = 2;
+    map[13][18] = 2;
+    map[1][18] = 2;
 
-    cout << "map updated \n";
+    // cout << "map updated \n";
     SDL_Surface *bitmap = NULL;
 
     SDL_Texture *map_texture;
@@ -418,12 +413,21 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
   SDL_Texture *tex = NULL;
     tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
+    SDL_Texture *ini = NULL;
+    bitmap = SDL_LoadBMP("resources/intial.bmp");
+    ini = SDL_CreateTextureFromSurface(renderer, bitmap);
+
     bitmap = SDL_LoadBMP("resources/building.bmp");
     SDL_Texture *build = NULL;
     build = SDL_CreateTextureFromSurface(renderer, bitmap);
 
     map_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_SetRenderTarget(renderer, map_texture);
+
+
+    rect.x = TILE_SIZE * 1;
+    rect.y = TILE_SIZE * 1;
+    SDL_RenderCopy(renderer, ini, NULL, &rect);    
     int i, j;
     for (i = 0; i < GRID_HEIGHT; i++)
     {

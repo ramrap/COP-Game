@@ -15,16 +15,32 @@ void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
                     *menu = 's';
                     pressed = true;
                 }
+                else if (e.key.keysym.sym == SDLK_h) {
+                    *menu = 'h';
+                    pressed = true;
+                }
 
             }
         }
         usleep(200);
-        SDL_RenderClear(renderer);
+        SDL_Rect rect;
+         rect.w = 19*TILE_SIZE;
+        rect.h = 15*TILE_SIZE; 
+        rect.x = TILE_SIZE * 0;
+        rect.y = TILE_SIZE * 0;
+        SDL_Surface *bitmap = NULL;
+        SDL_Texture *tex = NULL;
+        bitmap = SDL_LoadBMP("resources/home.bmp");
+        tex = SDL_CreateTextureFromSurface(renderer, bitmap);
+
+        SDL_RenderCopy(renderer, tex, NULL, &rect);
+        // SDL_RenderClear(renderer);
         disp_text(renderer, "[s]erver or [c]lient?", font, 260, 200);
         disp_text(renderer, "[h]elp?", font, 260, 150);
         SDL_RenderPresent(renderer);
     }
 }
+
 
 void winningscreen(int winner,SDL_Renderer *renderer,TTF_Font *font){
     SDL_Event e;
