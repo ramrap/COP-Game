@@ -178,6 +178,10 @@ int main()
     renderer = SDL_CreateRenderer(window, -1,
                                   SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
+    Audio music;
+    music.load("music/base.wav");
+    music.play();
+    
     if (renderer == NULL)
     {
         SDL_DestroyWindow(window);
@@ -215,6 +219,7 @@ int main()
         send_to_server(sock_client, server_addr, my_id, 0);
         usleep(100);
     }
+    music.stop();
 
     SDL_Rect bullet_pos;
     bullet_pos.w = BULLET_HEIGHT;
