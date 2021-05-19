@@ -115,7 +115,8 @@ void *client_loop(void *arg)
             players[id].deaths = tab[4];
             players[id].wins = tab[5];
             players[id].powerA = tab[6];
-            if(players[id].wins>=3){
+            // cout<<tab[5]<<" =<"<<id<<endl;
+            if(players[id].wins>=1){
                 
                 winner=id;
                 cout<<"Winner "<<id<<"\n";
@@ -246,14 +247,13 @@ int main()
 
     while (running)
     {
+         if(winner>=0){
+           break;
+        }
+       
         effect.play();
 
-        if(winner>=0){
-            running=false;
-            send_to_server(sock_client, server_addr, -3, winner);
-            break;
-
-        }
+        
 
         if (SDL_PollEvent(&e))
         {
@@ -320,7 +320,15 @@ SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
+
+         
     }
+    SDL_RenderClear(renderer);
+    // int i=0;.
+    
+    
+    winningscreen(winner,renderer,font);
+     usleep(3000000);
    
     close(sock_client);
     close(sock_server);
@@ -329,16 +337,9 @@ SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
     pthread_cancel(thread_id_server_send);
     effect.stop();
 
-    cout<<"HELLO \n";
-    renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-    winningscreen(winner,renderer,font);
+   
 
     
-
-    // gMusic = NULL;
-    // Mix_FreeChunk(gMusic);
-
     Mix_Quit();
     SDL_DestroyTexture(tex);
     SDL_DestroyTexture(bullet);

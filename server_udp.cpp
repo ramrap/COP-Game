@@ -154,9 +154,12 @@ void* server_send_loop(void *arg) {
                 }
                 
             }
+            // cout<<"HELLO PLAYER REACHED checking.... \n";
             if(check_if_player_reach(&players_server[i])){
+                
                 players_server[i].wins++;
-                // cout<<"player reaches \n";
+                cout<<"player=> "<< players_server[i].wins<<endl;
+                // players_server[i].wins++;
                 players_server[i].position.x = SPAWN_X;
                 players_server[i].position.y = SPAWN_Y;
             }
@@ -208,10 +211,10 @@ void* server_send_loop(void *arg) {
                     tab[k]=power_server[k-7-MAX_POWER].second;
                     // cout<<k<<" "<<tab[k]<<endl;
                 }
-                // for(int k=1;k<18;k++){
-                //     cout<<tab[k]<< " ";
-                // }
-                // cout<<endl;
+                for(int k=1;k<18;k++){
+                    cout<<tab[k]<< " ";
+                }
+                cout<<endl;
                 send_data(socket, clients_addresses[i], tab, 20);
                 usleep(20);
             }

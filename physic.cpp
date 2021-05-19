@@ -306,15 +306,16 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
 
             // SDL_RenderCopy(renderer, , NULL, &rect);
             a=true;
+            break;
         }
     }
 
 
-    if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
-    {
-        map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-        a=true;
-    }
+    // if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
+    // {
+    //     // map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
+    //     a=true;
+    // }
     if (a==true){
         Mix_Music *gMusic = NULL;
         Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 );
@@ -334,8 +335,7 @@ bool check_if_player_reach(struct Player *player)
     {
 
         cout << p.y / TILE_SIZE << "-- " << p.x / TILE_SIZE << endl;
-        map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-        // SDL_RenderCopy(renderer, , NULL, &rect);
+        // map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 2;
         return true;
     }
     return false;
@@ -350,7 +350,7 @@ void move_player(struct Player *player)
     {
         player_speed = SLOW_PLAYER;
         // cout << "slow downed player speed \n";
-        cout << player->powerATime << endl;
+        // cout << player->powerATime << endl;
         ;
     }
 
@@ -403,7 +403,7 @@ void move_player(struct Player *player)
 SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
 
-    int alpha=146;
+    int alpha=1000;
     // cout << "Give seed for maze \n";
     // cin >> alpha;
     srand(alpha); // seed random number generator.

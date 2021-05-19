@@ -4,7 +4,7 @@
 void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
     SDL_Event e;
     int pressed = false;
-    disp_text(renderer, "COP290", font, 100, 100);
+    
     while (!pressed) {
         if (SDL_PollEvent(&e)) {
             if (e.type == SDL_KEYDOWN) {
@@ -24,58 +24,70 @@ void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
         }
         usleep(200);
         SDL_Rect rect;
-         rect.w = 19*TILE_SIZE;
+         rect.w = 20*TILE_SIZE;
         rect.h = 15*TILE_SIZE; 
         rect.x = TILE_SIZE * 0;
         rect.y = TILE_SIZE * 0;
         SDL_Surface *bitmap = NULL;
         SDL_Texture *tex = NULL;
-        bitmap = SDL_LoadBMP("resources/home.bmp");
+        bitmap = SDL_LoadBMP("resources/home1.bmp");
         tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
-        SDL_RenderCopy(renderer, tex, NULL, &rect);
+        SDL_RenderCopy(renderer, tex, NULL, &rect); 
         // SDL_RenderClear(renderer);
         disp_text(renderer, "[s]erver or [c]lient?", font, 260, 200);
-        disp_text(renderer, "[h]elp?", font, 260, 150);
+        // disp_text(renderer, "[h]elp?", font, 260, 150);
         SDL_RenderPresent(renderer);
     }
 }
 
 
 void winningscreen(int winner,SDL_Renderer *renderer,TTF_Font *font){
+     SDL_RenderClear(renderer);
     SDL_Event e;
     int pressed = false;
     std::cout<<"INSIDE WINNING SCREEN \n";
-    while (!pressed) {
-        if (SDL_PollEvent(&e)) {
-            if (e.type == SDL_KEYDOWN) {
-                if (e.key.keysym.sym == SDLK_c) {
-                    // *menu = 'c';
-                    pressed = true;
-                } else if (e.key.keysym.sym == SDLK_s) {
-                    // *menu = 's';
-                    pressed = true;
-                }
 
-            }
-        }
+    SDL_Rect rect;
+    rect.w = 20*TILE_SIZE;
+    rect.h = 15*TILE_SIZE; 
+    rect.x = TILE_SIZE * 0;
+    rect.y = TILE_SIZE * 0;
+    SDL_Surface *bitmap = NULL;
+    SDL_Texture *tex = NULL;
+    bitmap = SDL_LoadBMP("resources/home1.bmp");
+    tex = SDL_CreateTextureFromSurface(renderer, bitmap);
+    SDL_RenderCopy(renderer, tex, NULL, &rect);
+    TTF_Font *font2;
+    font2 = TTF_OpenFont("resources/m5x7.ttf", 24);
+    
         if(winner==-1){
             disp_text(renderer, "Game Ended Abrubptly!!", font, 260, 200);
+             
         }
         else if(winner==1){
             disp_text(renderer, "Guest Won", font, 260, 200);
+             
         }
         else if(winner==0){
             disp_text(renderer, "Host Won", font, 260, 200);
+            
         }
-        usleep(200);
-        SDL_RenderClear(renderer);
-        
-        SDL_RenderPresent(renderer);
-    }
-    return;
+       
+        // std::cout<<"hello \n";
+         SDL_RenderPresent(renderer);
+       
 
-}
+
+         
+       
+       
+        
+       
+    }
+    // return;
+
+
 
 void ask_for_ip(SDL_Renderer *renderer, TTF_Font *font, char *ip) {
     memset(ip, ' ', 15);
