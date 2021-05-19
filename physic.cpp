@@ -12,6 +12,14 @@
 // powerUps PlayerPower;
 struct PowerUps playerPower[2];
 
+
+#define GRID_WIDTH 19
+#define GRID_HEIGHT 15
+#define NORTH 0
+#define EAST 1
+#define SOUTH 2
+#define WEST 3
+
 int map[15][20] = {
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -28,6 +36,111 @@ int map[15][20] = {
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
     {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+
+
+//----GLOBAL VARIABLES------------------------------------------------
+char grid[GRID_WIDTH*GRID_HEIGHT];
+
+//----FUNCTION PROTOTYPES---------------------------------------------
+void ResetGrid();
+int XYToIndex( int x, int y );
+int IsInBounds( int x, int y );
+void Visit( int x, int y );
+void PrintGrid();
+//----FUNCTIONS-------------------------------------------------------
+
+void ResetGrid()
+{
+ // Fills the grid with walls ('#' characters).
+ for (int i=0; i<GRID_WIDTH*GRID_HEIGHT; ++i)
+ {
+ grid[i] = '#';
+ }
+}
+int XYToIndex( int x, int y )
+{
+ // Converts the two-dimensional index pair (x,y) into a
+ // single-dimensional index. The result is y * ROW_WIDTH + x.
+ return y * GRID_WIDTH + x;
+}
+int IsInBounds( int x, int y )
+{
+ // Returns "true" if x and y are both in-bounds.
+ if (x < 0 || x >= GRID_WIDTH) return false;
+ if (y < 0 || y >= GRID_HEIGHT) return false;
+ return true;
+    
+}
+
+void Visit( int x, int y )
+{
+ // Starting at the given index, recursively visits every direction in a
+ // randomized order.
+ // Set my current location to be an empty passage.
+ grid[ XYToIndex(x,y) ] = ' ';
+ // Create an local array containing the 4 directions and shuffle their order.
+ int dirs[4];
+ dirs[0] = NORTH;
+ dirs[1] = EAST;
+ dirs[2] = SOUTH;
+ dirs[3] = WEST;
+ for (int i=0; i<4; ++i)
+ {
+ int r = rand() & 3;
+ int temp = dirs[r];
+ dirs[r] = dirs[i];
+ dirs[i] = temp;
+ }
+ // Loop through every direction and attempt to Visit that direction.
+ for (int i=0; i<4; ++i)
+ {
+ // dx,dy are offsets from current location. Set them based
+ // on the next direction I wish to try.
+ int dx=0, dy=0;
+ switch (dirs[i])
+ {
+ case NORTH: dy = -1; break;
+ case SOUTH: dy = 1; break;
+ case EAST: dx = 1; break;
+ case WEST: dx = -1; break;
+ }
+ // Find the (x,y) coordinates of the grid cell 2 spots
+ // away in the given direction.
+ int x2 = x + (dx<<1);
+ int y2 = y + (dy<<1);
+ if (IsInBounds(x2,y2))
+ {
+ if (grid[ XYToIndex(x2,y2) ] == '#')
+ {
+ // (x2,y2) has not been visited yet... knock down the
+ // wall between my current position and that position
+ grid[ XYToIndex(x2-dx,y2-dy) ] = ' ';
+ // Recursively Visit (x2,y2)
+ Visit(x2,y2);
+ }
+ }
+ }
+}
+
+
+void PrintGrid()
+{
+ // Displays the finished maze to the screen.
+ for (int y=0; y<GRID_HEIGHT; ++y)
+ {
+ for (int x=0; x<GRID_WIDTH; ++x)
+ {
+ cout << grid[XYToIndex(x,y)];
+    if(grid[XYToIndex(x,y)]=='#'){
+        map[y][x]=1;
+    }
+    else{
+        map[y][x]=0;
+    }
+ }
+ cout << endl;
+ }
+}
 
 vector<pair<int, int>> freespace;
 
@@ -298,6 +411,13 @@ void move_player(struct Player *player)
 
 SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
+
+     // Starting point and top-level control.
+ srand( time(0) ); // seed random number generator.
+ ResetGrid();
+ Visit(1,1);
+ PrintGrid();
+
     cout<<"map updated \n";
     SDL_Surface *bitmap = NULL;
     
@@ -305,6 +425,7 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
     SDL_Rect rect;
     rect.w = TILE_SIZE;
     rect.h = TILE_SIZE;
+    
     bitmap = SDL_LoadBMP("resources/tile1.bmp");
     
     SDL_Texture *tex = NULL;
@@ -319,10 +440,11 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
     map_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_SetRenderTarget(renderer, map_texture);
     int i, j;
-    for (i = 0; i < SCREEN_HEIGHT / TILE_SIZE; i++)
+    for (i = 0; i < GRID_HEIGHT; i++)
     {
-        for (j = 0; j < SCREEN_WIDTH / TILE_SIZE; j++)
+        for (j = 0; j <GRID_WIDTH; j++)
         {
+            cout<<map[i][j];
             if (map[i][j] == 1)
             {
                 rect.x = TILE_SIZE * j;
@@ -336,7 +458,9 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
                 SDL_RenderCopy(renderer, build, NULL, &rect);
 
             }
+
         }
+        cout<<endl;
     }
     SDL_SetRenderTarget(renderer, NULL);
     return map_texture;
