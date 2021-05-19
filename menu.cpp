@@ -21,11 +21,45 @@ void server_or_client(SDL_Renderer *renderer, char *menu, TTF_Font *font){
         usleep(200);
         SDL_RenderClear(renderer);
         disp_text(renderer, "[s]erver or [c]lient?", font, 260, 200);
-        // disp_text(renderer, "[elp?", font, 260, 150);
+        disp_text(renderer, "[h]elp?", font, 260, 150);
         SDL_RenderPresent(renderer);
     }
 }
 
+void winningscreen(int winner,SDL_Renderer *renderer,TTF_Font *font){
+    SDL_Event e;
+    int pressed = false;
+    std::cout<<"INSIDE WINNING SCREEN \n";
+    while (!pressed) {
+        if (SDL_PollEvent(&e)) {
+            if (e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_c) {
+                    // *menu = 'c';
+                    pressed = true;
+                } else if (e.key.keysym.sym == SDLK_s) {
+                    // *menu = 's';
+                    pressed = true;
+                }
+
+            }
+        }
+        if(winner==-1){
+            disp_text(renderer, "Game Ended Abrubptly!!", font, 260, 200);
+        }
+        else if(winner==1){
+            disp_text(renderer, "Guest Won", font, 260, 200);
+        }
+        else if(winner==0){
+            disp_text(renderer, "Host Won", font, 260, 200);
+        }
+        usleep(200);
+        SDL_RenderClear(renderer);
+        
+        SDL_RenderPresent(renderer);
+    }
+    return;
+
+}
 
 void ask_for_ip(SDL_Renderer *renderer, TTF_Font *font, char *ip) {
     memset(ip, ' ', 15);

@@ -156,7 +156,7 @@ void* server_send_loop(void *arg) {
             }
             if(check_if_player_reach(&players_server[i])){
                 players_server[i].wins++;
-                cout<<"player reaches \n";
+                // cout<<"player reaches \n";
                 players_server[i].position.x = SPAWN_X;
                 players_server[i].position.y = SPAWN_Y;
             }
@@ -174,15 +174,16 @@ void* server_send_loop(void *arg) {
         int bullets_n = get_bullet_array(bullets_server, &bullet_array);
 
         vector<pair<int,int> >freespace;
-        getMap(freespace);
-        // srand(time(NULL));
-        if(freespace.size()!=300){
+        freespace = getMap();
+       
+        if(freespace.size()!=300&& freespace.size()!=0){
         for(int i=0;i<MAX_POWER;i++){
             if(power_server[i].first==0 || power_server[j].second==0){
                 
                 int RandIndex = rand() % freespace.size();
-                power_server[i].first = freespace[RandIndex].first*TILE_SIZE;
-                power_server[i].second = freespace[RandIndex].second*TILE_SIZE;
+                power_server[i].first = freespace[RandIndex].second*TILE_SIZE;
+                power_server[i].second = freespace[RandIndex].first*TILE_SIZE;
+                cout<<freespace[RandIndex].first<<" "<<freespace[RandIndex].second<<endl;
             }
         }
         }

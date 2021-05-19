@@ -16,7 +16,7 @@
 
 
 
-void getMap(vector<pair<int, int>> &freespace);
+vector<pair<int, int>> getMap();
 vector<pair<int,int>> getPowerArray();
 void updatePowerArray(vector<pair<int,int>> t);
 void move_player(struct Player *player); 

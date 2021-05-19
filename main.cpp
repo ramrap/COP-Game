@@ -25,6 +25,7 @@ struct Player players[MAX_PLAYERS];
 int number_of_players = 0;
 int16_t my_id = -1;
 int16_t bullets_client[256];
+int16_t winner =-1;
 
 vector<pair<int,int>>power_array(MAX_POWER);
 
@@ -114,7 +115,11 @@ void *client_loop(void *arg)
             players[id].deaths = tab[4];
             players[id].wins = tab[5];
             players[id].powerA = tab[6];
-
+            if(players[id].wins>=3){
+                
+                winner=id;
+                cout<<"Winner "<<id<<"\n";
+            }
             
             for(int i=7;i<7+MAX_POWER;i++){
                
@@ -130,6 +135,11 @@ void *client_loop(void *arg)
             bullets_in_array = (length - sizeof(int16_t)) / (sizeof(int16_t) * 2);
             memcpy(bullets_client, tab + 1, sizeof(int16_t) * 2 * bullets_in_array);
             bullets_number = bullets_in_array;
+        }
+        if(id == -3){
+            running=false;
+            winner=tab[1];
+            cout<<"WINNER DECLARED \n";
         }
         usleep(50);
     }
@@ -238,6 +248,13 @@ int main()
     {
         effect.play();
 
+        if(winner>=0){
+            running=false;
+            send_to_server(sock_client, server_addr, -3, winner);
+            break;
+
+        }
+
         if (SDL_PollEvent(&e))
         {
             if (e.type == SDL_QUIT)
@@ -246,6 +263,7 @@ int main()
             }
             resolve_keyboard(e, &players[my_id]);
         }
+        
 
         send_to_server(sock_client, server_addr, my_id, key_state_from_player(&players[my_id]));
         usleep(30);
@@ -303,12 +321,20 @@ SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
-
+   
     close(sock_client);
     close(sock_server);
     pthread_cancel(thread_id_client);
     pthread_cancel(thread_id_server);
     pthread_cancel(thread_id_server_send);
+    effect.stop();
+
+    cout<<"HELLO \n";
+    renderer = SDL_CreateRenderer(window, -1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    winningscreen(winner,renderer,font);
+
+    
 
     // gMusic = NULL;
     // Mix_FreeChunk(gMusic);
