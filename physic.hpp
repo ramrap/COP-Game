@@ -23,7 +23,7 @@ void move_player(struct Player *player);
 SDL_Texture* get_map_texture(SDL_Renderer *renderer);
 void move_bullets(struct node **bullets);
 int check_if_player_dies(struct Player *player, struct node **bullets, int *killer);
-int check_if_player_power(struct Player *player,vector<pair<int,int>> &power_server);
+int check_if_player_power(struct Player *player,vector<pair<int,int>> &power_server,int &po_ind);
 bool check_if_player_reach(struct Player *player);
 
 

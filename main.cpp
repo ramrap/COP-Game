@@ -157,6 +157,7 @@ int main()
     SDL_Texture *power = NULL;
     SDL_Texture *map = NULL;
     SDL_Texture *build = NULL;
+    SDL_Texture *bomb = NULL;
     TTF_Init();
     TTF_Font *font;
     font = TTF_OpenFont("resources/m5x7.ttf", 24);
@@ -195,6 +196,8 @@ int main()
     bullet = load_texture(renderer, "resources/bullet.bmp");
     build = load_texture(renderer, "resources/building.bmp");
     power = load_texture(renderer, "resources/power2.png");
+    bomb = load_texture(renderer, "resources/bomb.bmp");
+    
     int i;
     server_or_client(renderer, &menu, font);
     if (menu == 'c')
@@ -286,9 +289,14 @@ int main()
         {
             bullet_pos.x = power_array[i].first;
             bullet_pos.y = power_array[i].second;
-            
+            if(i%2==0){
+SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+            }
+            else{
+                SDL_RenderCopy(renderer, bomb, NULL, &bullet_pos);
+            }
             // cout<<power_array[i].first<<" "<<power_array[i].second<<endl;
-            SDL_RenderCopy(renderer, fire, NULL, &bullet_pos);
+            
         }
 
 

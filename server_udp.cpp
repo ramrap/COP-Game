@@ -133,6 +133,7 @@ void* server_send_loop(void *arg) {
 
     
     int killer;
+    int po_ind=1;
         for (i = 0; i < number_of_connected_clients; i++) {
             move_player(&players_server[i]);
             if (check_if_player_dies(&players_server[i], &bullets_server, &killer)) {
@@ -141,15 +142,31 @@ void* server_send_loop(void *arg) {
                 // players_server[i].deaths++;
                 players_server[killer].kills++;
             }
-            if(check_if_player_power(&players_server[i],power_server)){
-                players_server[i].kills++;
-                cout<<"player power ups \n";
+            if(check_if_player_power(&players_server[i],power_server,po_ind)){
+                // players_server[i].kills++;
+                if(po_ind){
+                     players_server[i].position.x = SPAWN_X;
+                     players_server[i].position.y = SPAWN_Y;
+                }
+                else{
+                    players_server[i].powerATime=150;
+                    players_server[i].powerA = 1;
+                }
+                
             }
             if(check_if_player_reach(&players_server[i])){
                 players_server[i].wins++;
                 cout<<"player reaches \n";
                 players_server[i].position.x = SPAWN_X;
                 players_server[i].position.y = SPAWN_Y;
+            }
+
+            if(players_server[i].powerA){
+                players_server[i].powerATime--;
+                if(players_server[i].powerATime<0){
+                    players_server[i].powerATime=0;
+                    players_server[i].powerA=0;
+                }
             }
         }
         
@@ -158,12 +175,16 @@ void* server_send_loop(void *arg) {
 
         vector<pair<int,int> >freespace;
         getMap(freespace);
+        // srand(time(NULL));
+        if(freespace.size()!=300){
         for(int i=0;i<MAX_POWER;i++){
             if(power_server[i].first==0 || power_server[j].second==0){
+                
                 int RandIndex = rand() % freespace.size();
                 power_server[i].first = freespace[RandIndex].first*TILE_SIZE;
                 power_server[i].second = freespace[RandIndex].second*TILE_SIZE;
             }
+        }
         }
         
         

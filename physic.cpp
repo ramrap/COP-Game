@@ -20,22 +20,7 @@ struct PowerUps playerPower[2];
 #define SOUTH 2
 #define WEST 3
 
-int map[15][20] = {
-    {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    {0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0},
-    {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-    {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-    {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+int map[15][20] ;
 
 
 //----GLOBAL VARIABLES------------------------------------------------
@@ -150,7 +135,7 @@ vector<pair<int,int>> getPowerArray(){
 
     for(int i=0;i<MAX_POWER;i++){
         powerArray[i].first = playerPower[1].powerX[i];
-         powerArray[i].second = playerPower[1].powerY[i];
+        powerArray[i].second = playerPower[1].powerY[i];
     }
     return powerArray;
 }
@@ -167,18 +152,8 @@ void updatePowerArray(vector<pair<int,int>> t){
 void getMap(vector<pair<int, int>> &freespace)
 {
     //     Solution s;
-    int height = 15;
-    int width = 20;
-    //     srand(time(0));
-    //     vector<int> row(width);
-    //     vector<vector<int>> maze;
-    //     for (int i = 0; i < height; ++i)
-    //     {
-    //         maze.push_back(row);
-    //     }
-    //     s.maze(maze);
-    //     s.showMaze(maze);
-
+    int height = 14;
+    int width = 19;
     for (int i = 0; i < height; ++i)
     {
         for (int j = 0; j < width; ++j)
@@ -186,6 +161,7 @@ void getMap(vector<pair<int, int>> &freespace)
             if (map[i][j] == 0)
             {
                 freespace.push_back(make_pair(i, j));
+                
             }
         }
     }
@@ -301,7 +277,7 @@ int check_if_player_dies(struct Player *player, struct node **bullets, int *kill
     }
     return false;
 }
-int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_server)
+int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_server,int &po_ind)
 {
     // struct node *next = *bullets;
     struct SDL_Rect p = player->position;
@@ -321,7 +297,9 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
         )
         {
 
-            
+            if(i%2==0){
+                po_ind=0;
+            }            
             power_server[i].first=0;
             power_server[i].second=0;
 
@@ -363,23 +341,32 @@ void move_player(struct Player *player)
 {
     int x_movement = 0;
     int y_movement = 0;
+
+    int player_speed = PLAYER_SPEED;
+    if(player->powerA){
+        player_speed = SLOW_PLAYER;
+        cout<<"slow downed player speed \n";
+        cout<<player->powerATime<<endl;;
+
+    }
+
     if (player->left)
     {
-        x_movement -= PLAYER_SPEED;
+        x_movement -= player_speed ;
         player->face = -1;
     }
     if (player->right)
     {
-        x_movement += PLAYER_SPEED;
+        x_movement += player_speed ;
         player->face = 1;
     }
     if (player->up)
     {
-        y_movement -= PLAYER_SPEED;
+        y_movement -= player_speed ;
     }
     if (player->down)
     {
-        y_movement += PLAYER_SPEED;
+        y_movement +=player_speed ;
     }
 
     // y_movement = player->y_speed / 3;
@@ -412,11 +399,14 @@ void move_player(struct Player *player)
 SDL_Texture *get_map_texture(SDL_Renderer *renderer)
 {
 
-     // Starting point and top-level control.
- srand( time(0) ); // seed random number generator.
+int alpha;
+cout<<"Give seed for maze \n";
+cin>>alpha;
+ srand( alpha ); // seed random number generator.
  ResetGrid();
  Visit(1,1);
  PrintGrid();
+ map[14][1]=2;
 
     cout<<"map updated \n";
     SDL_Surface *bitmap = NULL;
@@ -425,7 +415,7 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
     SDL_Rect rect;
     rect.w = TILE_SIZE;
     rect.h = TILE_SIZE;
-    
+
     bitmap = SDL_LoadBMP("resources/tile1.bmp");
     
     SDL_Texture *tex = NULL;
@@ -452,7 +442,7 @@ SDL_Texture *get_map_texture(SDL_Renderer *renderer)
                 SDL_RenderCopy(renderer, tex, NULL, &rect);
             }
             else if(map[i][j]==2){
-                cout<<i<<" "<<j<<endl;
+                // cout<<i<<" "<<j<<endl;
                 rect.x = TILE_SIZE * j;
                 rect.y = TILE_SIZE * i;
                 SDL_RenderCopy(renderer, build, NULL, &rect);
