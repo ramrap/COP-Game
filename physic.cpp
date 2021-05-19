@@ -301,6 +301,23 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
             power_server[i].first = 0;
             power_server[i].second = 0;
 
+            if(i%2==0){
+                Mix_Music *gMusic = NULL;
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+        gMusic = Mix_LoadMUS("music/Laser_Shoot.wav");
+        Mix_PlayMusic(gMusic, 1);
+
+            }
+            else{
+                 Mix_Music *gMusic = NULL;
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+        gMusic = Mix_LoadMUS("music/Explosion7.wav");
+        Mix_PlayMusic(gMusic, 1);
+
+            }
+
             // SDL_RenderCopy(renderer, , NULL, &rect);
             a = true;
             break;
@@ -314,11 +331,7 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
     // }
     if (a == true)
     {
-        Mix_Music *gMusic = NULL;
-        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
-
-        gMusic = Mix_LoadMUS("music/Laser_Shoot.wav");
-        Mix_PlayMusic(gMusic, 1);
+        
     }
 
     return a;
@@ -335,7 +348,7 @@ bool check_if_player_reach(struct Player *player)
         Mix_Music *gMusic = NULL;
         Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
-        gMusic = Mix_LoadMUS("music/Laser_Shoot.wav");
+        gMusic = Mix_LoadMUS("music/collect.wav");
         Mix_PlayMusic(gMusic, 1);
         return true;
     }

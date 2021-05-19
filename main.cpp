@@ -187,7 +187,7 @@ int main()
                                   SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     Audio music;
-    music.load("music/base.wav");
+    music.load("music/main_theme.wav");
     music.play();
 
     if (renderer == NULL)

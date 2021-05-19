@@ -6,6 +6,7 @@
 #include "constans.hpp"
 #include "time.h"
 #include "sys/time.h"
+#include "audio.hpp"
 
 struct sockaddr_in clients_addresses[MAX_PLAYERS];
 struct Player players_server[MAX_PLAYERS];
@@ -87,6 +88,11 @@ void *server_receive_loop(void *arg)
                 {
                     temp.position.x -= BULLET_WIDTH;
                 }
+                        Mix_Music *gMusic = NULL;
+                Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+                gMusic = Mix_LoadMUS("music/Hit_Hurt.wav");
+                Mix_PlayMusic(gMusic, 1);
                 temp.player_id = client_pos;
                 push_element(&bullets_server, &temp, sizeof(struct Bullet));
             }
