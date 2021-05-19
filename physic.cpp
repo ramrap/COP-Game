@@ -281,6 +281,7 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
     // struct node *next = *bullets;
     struct SDL_Rect p = player->position;
     SDL_Rect rect;
+    bool a=false;
 
     for (int i = 0; i < power_server.size(); i++)
     {
@@ -304,17 +305,24 @@ int check_if_player_power(struct Player *player, vector<pair<int, int>> &power_s
             power_server[i].second = 0;
 
             // SDL_RenderCopy(renderer, , NULL, &rect);
-            return true;
+            a=true;
         }
     }
 
     if (map[p.y / TILE_SIZE][p.x / TILE_SIZE] == 2)
     {
         map[p.y / TILE_SIZE][p.x / TILE_SIZE] = 0;
-        return true;
+        a=true;
+    }
+    if (a==true){
+        Mix_Music *gMusic = NULL;
+        Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 );
+        
+        gMusic = Mix_LoadMUS( "music/Laser_Shoot.wav" );
+        Mix_PlayMusic( gMusic, 1 );
     }
 
-    return false;
+    return a;
 }
 bool check_if_player_reach(struct Player *player)
 {
