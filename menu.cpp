@@ -63,7 +63,7 @@ void winningscreen(int winner, SDL_Renderer *renderer, TTF_Font *font)
     rect.y = TILE_SIZE * 0;
     SDL_Surface *bitmap = NULL;
     SDL_Texture *tex = NULL;
-    bitmap = SDL_LoadBMP("resources/end.bmp");
+    bitmap = SDL_LoadBMP("resources/home1.bmp");
     tex = SDL_CreateTextureFromSurface(renderer, bitmap);
     SDL_RenderCopy(renderer, tex, NULL, &rect);
     TTF_Font *font2;

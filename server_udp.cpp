@@ -176,7 +176,7 @@ void *server_send_loop(void *arg)
             {
 
                 players_server[i].wins++;
-                cout << "player=> " << players_server[i].wins << endl;
+                // cout << "player=> " << players_server[i].wins << endl;
                 // players_server[i].wins++;
                 players_server[i].position.x = SPAWN_X;
                 players_server[i].position.y = SPAWN_Y;

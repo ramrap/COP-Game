@@ -315,19 +315,23 @@ int main()
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
+    effect.stop();
+
     SDL_RenderClear(renderer);
+    Audio music2;
+    music2.load("music/cello.wav");
+    music2.play();
     // int i=0;.
 
     winningscreen(winner, renderer, font);
-    usleep(3000000);
+    usleep(4500000);
 
     close(sock_client);
     close(sock_server);
     pthread_cancel(thread_id_client);
     pthread_cancel(thread_id_server);
     pthread_cancel(thread_id_server_send);
-    effect.stop();
-
+    
     Mix_Quit();
     SDL_DestroyTexture(tex);
     SDL_DestroyTexture(bullet);
